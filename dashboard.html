@@ -1,256 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | KisaanSaathi</title>
+  <meta charset="UTF-8">
+  <title>Kisaan Sathi | Farmer Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-    :root {
-        --bg: #ffffff;
-        --text: #1b3c1a;
-        --header: #0f6819;
-        --sidebar-bg: #0f6819;
-        --card-bg: #f2fbf3;
-        --btn-bg: #0f6819;
-        --btn-text: #ffffff;
-        --border: #c7efcd;
-    }
-    body.dark {
-        --bg: #0b1a0d;
-        --text: #d9ffe0;
-        --header: #06230c;
-        --sidebar-bg: #06230c;
-        --card-bg: #14301a;
-        --btn-bg: #1b8f33;
-        --btn-text: #ffffff;
-        --border: #1b8f33;
-    }
+  <link rel="stylesheet" href="styles.css">
 
-    * { box-sizing: border-box; }
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        display: flex;
-        transition: .3s;
-    }
-
-    /* Sidebar */
-    .sidebar {
-        width: 230px;
-        background: var(--sidebar-bg);
-        height: 100vh;
-        padding: 20px;
-        position: fixed;
-    }
-    .sidebar h2 {
-        text-align: center;
-        color: var(--btn-text);
-        margin-bottom: 35px;
-    }
-    .menu a {
-        color: var(--btn-text);
-        display: block;
-        padding: 14px;
-        text-decoration: none;
-        margin-bottom: 8px;
-        background: transparent;
-        border-radius: 8px;
-        transition: .2s;
-    }
-    .menu a:hover,
-    .menu a.active {
-        background: var(--btn-text);
-        color: var(--sidebar-bg);
-    }
-
-    /* Main Section */
-    .main {
-        margin-left: 240px;
-        padding: 20px;
-        width: calc(100% - 240px);
-    }
-
-    .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--card-bg);
-        padding: 12px 20px;
-        border-radius: 10px;
-        margin-bottom: 25px;
-    }
-    .topbar button {
-        padding: 7px 14px;
-        background: var(--btn-bg);
-        color: var(--btn-text);
-        border: none;
-        border-radius: 7px;
-        cursor: pointer;
-    }
-
-    /* Cards */
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 18px;
-    }
-    .card {
-        background: var(--card-bg);
-        padding: 20px;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        cursor: pointer;
-        transition: .25s;
-    }
-    .card:hover { transform: scale(1.03); }
-
-    .card h3 { margin-top: 0; }
-    .alert { color: #e32e2e; font-weight: bold; }
-
-    @media(max-width:800px){
-        .sidebar { width: 180px; }
-        .main { margin-left: 190px; width: calc(100% - 190px); }
-    }
-    @media(max-width:600px){
-        .sidebar { position: relative; width: 100%; height: auto; }
-        .main { margin: 0; width: 100%; }
-    }
-</style>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <h2>🌾 KisaanSaathi</h2>
-    <div class="menu">
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="weather.html">Weather</a>
-        <a href="crop-health.html">Crop Health</a>
-        <a href="mandi.html">Mandi Prices</a>
-        <a href="profile.html">Profile</a>
-        <a href="index.html">Logout</a>
+
+<aside class="sidebar">
+  <h2>🌾 KisaanSathi</h2>
+  <ul>
+    <li class="active">Dashboard</li>
+    <li>Weather</li>
+    <li>Crop Health</li>
+    <li>Mandi Prices</li>
+    <li>Profile</li>
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="top-bar">
+    <h1>Farmer Dashboard</h1>
+    <div>
+      <span id="liveTime"></span>
+      <button id="darkBtn">🌙 Dark Mode</button>
     </div>
+  </div>
+
+  <div class="cards">
+
+  <div class="card clickable" onclick="goTo('weather.html')">
+    <h3>🌤 Weather</h3>
+    <p>View today’s weather</p>
+  </div>
+
+  <div class="card clickable" onclick="goTo('crop.html')">
+    <h3>🌱 Crop Status</h3>
+    <p>Check crop health</p>
+  </div>
+
+  <div class="card clickable" onclick="goTo('mandi.html')">
+    <h3>📈 Mandi Price</h3>
+    <p>Today’s market rates</p>
+  </div>
+
+  <div class="card clickable" onclick="goTo('profile.html')">
+    <h3>👤 Profile</h3>
+    <p>Your farm details</p>
+  </div>
+
 </div>
 
-<!-- Main Content -->
-<div class="main">
 
-    <div class="topbar">
-        <h3>👋 Welcome Farmer!</h3>
-        <button onclick="toggleTheme()">🌙 / ☀</button>
+  <div class="stats">
+    <div class="stat-card">
+      <h3>Temperature</h3>
+      <p>32°C</p>
+      <span>Sunny</span>
     </div>
 
-    <div class="cards">
-
-        <!-- Weather (Realtime) -->
-        <div class="card">
-            <h3>🌦 Weather</h3>
-            <p>Temp: <strong id="temp">--</strong></p>
-            <p>Humidity: <span id="humidity">--</span></p>
-        </div>
-
-        <!-- Crop Status -->
-        <div class="card">
-            <h3>🌱 Crop Status</h3>
-            <p class="alert">⚠ Possible infection detected!</p>
-            <small>Check in Crop Health page</small>
-        </div>
-
-        <!-- Mandi Prices -->
-        <div class="card">
-            <h3>💰 Mandi Prices</h3>
-            <p>Wheat: ₹2150 / Quintal</p>
-            <p>Maize: ₹1850 / Quintal</p>
-        </div>
-
-        <!-- Alerts -->
-        <div class="card">
-            <h3>🚨 Alerts</h3>
-            <p class="alert" id="riskMsg">Loading risk...</p>
-        </div>
-
-        <!-- AI Insights -->
-        <div class="card">
-            <h3>🤖 AI Farming Insights</h3>
-            <p id="insight">Getting insight...</p>
-        </div>
-
-        <!-- Forecast -->
-        <div class="card">
-            <h3>📅 3-Day Forecast</h3>
-            <p id="day1">--</p>
-            <p id="day2">--</p>
-            <p id="day3">--</p>
-        </div>
-
+    <div class="stat-card center">
+      <h3>Crop Health</h3>
+      <div class="health-ring">92%</div>
+      <span class="good">Excellent</span>
     </div>
-</div>
 
-<script>
-/* ------------- DARK/LIGHT MODE ------------- */
-function toggleTheme(){
-    document.body.classList.toggle("dark");
-    localStorage.setItem("mode", document.body.classList.contains("dark") ? "dark":"light");
-}
-if(localStorage.getItem("mode")==="dark"){
-    document.body.classList.add("dark");
-}
+    <div class="stat-card">
+      <h3>Wheat Price</h3>
+      <p>₹2150/qtl</p>
+      <small class="up">▲ ₹40 from yesterday</small>
+    </div>
 
-/* ------------- LIVE WEATHER + FORECAST ------------- */
-async function loadWeather() {
-    const apiKey = "7316b53d565a985a92ec34501feb04a9"; // 🔥 replace with your OpenWeather key
-    const city = "Delhi"; // change later to auto location if needed
+    <div class="stat-card">
+      <h3>AI Alerts</h3>
+      <p>2</p>
+      <span class="warn">Action Needed</span>
+    </div>
+  </div>
 
-    const urlWeather = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+  <div class="panel ai-insight">
+    <h2>🤖 AI Farming Insight</h2>
+    <p>
+      Due to today’s high temperature, increase irrigation
+      by 10–15% during afternoon hours.
+    </p>
+  </div>
 
-    try {
-        // current weather
-        const resW = await fetch(urlWeather);
-        const dataW = await resW.json();
-        document.getElementById("temp").innerText = dataW.main.temp + "°C";
-        document.getElementById("humidity").innerText = dataW.main.humidity + "%";
+  <div class="panel risk-alert">
+    <h2>⚠ Weather Risk Alert</h2>
+    <p>Possible rain in next 24 hours. Avoid pesticide spraying.</p>
+  </div>
 
-        // simple dynamic messages
-        const risk = document.getElementById("riskMsg");
-        const insight = document.getElementById("insight");
-        if (dataW.main.temp > 35) {
-            risk.innerText = "⚠ Heatwave alert — irrigation recommended!";
-            insight.innerText = "Irrigate after sunset to avoid shock.";
-        } else if (dataW.main.humidity > 70) {
-            risk.innerText = "⚠ High humidity — fungal risk!";
-            insight.innerText = "Use preventive spray within 24 hours.";
-        } else {
-            risk.innerText = "No major risk — farming conditions stable 🌱";
-            insight.innerText = "Normal irrigation and care recommended.";
-        }
+  <div class="panel">
+    <h2>🌦 3-Day Weather Forecast</h2>
+    <div class="forecast">
+      <div>Mon ☀ 33°C</div>
+      <div>Tue 🌧 28°C</div>
+      <div>Wed ☁ 30°C</div>
+    </div>
+  </div>
 
-        // 3-day forecast
-        const resF = await fetch(urlForecast);
-        const dataF = await resF.json();
-        const days = [day1, day2, day3];
-        let index = 0;
-        for (let i = 0; i < dataF.list.length && index < 3; i++) {
-            if (dataF.list[i].dt_txt.includes("12:00:00")) {
-                const d = new Date(dataF.list[i].dt_txt);
-                const temp = dataF.list[i].main.temp;
-                const icon = dataF.list[i].weather[0].main;
-                days[index].innerText = `${d.toDateString()} — ${icon} ${temp}°C`;
-                index++;
-            }
-        }
-    } catch (err) {
-        console.log("Weather fetch failed:", err);
-    }
-}
+  <div class="panel">
+    <h2>🌾 Check Crop Health</h2>
+    <input type="file" accept="image/*">
+    <br>
+    <img id="imagePreview">
+    <br>
+    <button class="btn">Analyze Crop</button>
+  </div>
 
-loadWeather();            // first load
-setInterval(loadWeather, 1800000);   // auto refresh every 30 min
-</script>
+  <div class="panel">
+    <h2>📊 Mandi Price Trend</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+
+</main>
+
+<script src="script.js"></script>
+
 
 </body>
 </html>
