@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About | KisaanSaathi</title>
+
+<style>
+    :root {
+        --bg: #ffffff;
+        --text: #1b3c1a;
+        --card: #e8fbe9;
+        --header: #0f6819;
+        --btn-bg: #0f6819;
+        --btn-text: #fff;
+    }
+    body.dark {
+        --bg: #0d1c0e;
+        --text: #e5ffe7;
+        --card: #14301a;
+        --header: #06230c;
+        --btn-bg: #1b8f33;
+        --btn-text: #fff;
+    }
+
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial; transition: .3s; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--header); color: var(--btn-text); }
+    header .logo { font-size: 28px; font-weight: bold; cursor: pointer; }
+    nav a { margin: 0 18px; color: var(--btn-text); text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+
+    .theme-btn {
+        background: var(--btn-bg);
+        border: none;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        color: var(--btn-text);
+        margin-left: 12px;
+    }
+
+    .container { max-width: 950px; margin: auto; padding: 60px 20px; }
+    h1 { font-size: 42px; text-align: center; color: var(--text); }
+    p { font-size: 19px; line-height: 1.6; }
+    .mission-box { background: var(--card); padding: 28px; border-radius: 12px; margin-top: 40px; border-left: 6px solid var(--btn-bg); }
+    .features-list li { font-size: 19px; padding: 10px 0; }
+
+    footer { background: var(--header); text-align: center; padding: 18px; color: var(--btn-text); margin-top: 45px; }
+
+    @media(max-width:650px){ header{flex-direction:column;} h1{font-size:34px;} }
+</style>
+</head>
+
+<body>
+<header>
+    <div class="logo" onclick="home()">🌾 KisaanSaathi</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html" style="text-decoration: underline;">About</a>
+        <a href="contact.html">Contact</a>
+        <button class="theme-btn" onclick="toggleTheme()">🌙 Dark / ☀ Light</button>
+    </nav>
+</header>
+
+<div class="container">
+    <h1>About KisaanSaathi</h1>
+    <p>
+        KisaanSaathi is a smart agriculture platform built to make farming easier, sustainable, and profitable.
+        Our platform supports farmers with AI tools, real-time information, and local language support.
+    </p>
+
+    <div class="mission-box">
+        <h2>🌱 Our Mission</h2>
+        <p>
+            Empower every farmer with modern farming technology — regardless of location, education, or internet strength.
+        </p>
+    </div>
+
+    <ul class="features-list">
+        <li>🌦 Weather alerts & farming recommendations</li>
+        <li>🌱 AI-based crop disease detection through photos</li>
+        <li>💰 Live mandi prices & selling guidance</li>
+        <li>🗣 Available in regional languages</li>
+        <li>📶 Works in rural low-internet areas</li>
+    </ul>
+</div>
+
+<footer>
+    © 2025 KisaanSaathi — Empowering Farmers with Technology 🌱
+</footer>
+
+<script>
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("mode", document.body.classList.contains("dark") ? "dark" : "light");
+}
+if (localStorage.getItem("mode") === "dark") {
+    document.body.classList.add("dark");
+}
+function home(){ window.location.href="index.html"; }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather | KisaanSaathi</title>
+
+<style>
+    :root {
+        --bg: #ffffff;
+        --text: #1b3c1a;
+        --sidebar-bg: #0f6819;
+        --card-bg: #f2fbf3;
+        --btn-bg: #0f6819;
+        --btn-text: #ffffff;
+        --border: #c7efcd;
+    }
+    body.dark {
+        --bg: #0b1a0d;
+        --text: #d9ffe0;
+        --sidebar-bg: #06230c;
+        --card-bg: #14301a;
+        --btn-bg: #1b8f33;
+        --btn-text: #ffffff;
+        --border: #1b8f33;
+    }
+
+    body { margin: 0; display: flex; font-family: Arial; background: var(--bg); color: var(--text); transition: .3s; }
+    .sidebar { width: 230px; background: var(--sidebar-bg); height: 100vh; padding: 20px; position: fixed; }
+    .sidebar h2 { text-align: center; color: var(--btn-text); margin-bottom: 35px; }
+    .menu a { color: var(--btn-text); display: block; padding: 14px; text-decoration: none; margin-bottom: 8px; border-radius: 8px; }
+    .menu a:hover, .menu a.active { background: var(--btn-text); color: var(--sidebar-bg); }
+
+    .main { margin-left: 240px; padding: 20px; width: calc(100% - 240px); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; }
+    .topbar button { background: var(--btn-bg); color: var(--btn-text); padding: 7px 14px; border: none; border-radius: 7px; cursor: pointer; }
+
+    .weather-box { background: var(--card-bg); padding: 24px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 25px; }
+    .weather-box input { font-size: 18px; padding: 10px; width: 90%; margin-top: 10px; border-radius: 8px; border: 2px solid var(--btn-bg); background: var(--bg); color: var(--text); }
+    .btn-search { margin-top: 10px; background: var(--btn-bg); color: var(--btn-text); padding: 10px 18px; border-radius: 10px; font-size: 18px; border: none; cursor: pointer; margin-bottom: 10px; }
+
+    .forecast { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 15px; }
+    .day-card { background: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+    .temp { font-size: 28px; font-weight: bold; }
+
+    @media(max-width:650px){
+        .sidebar{position:relative;width:100%;height:auto;}
+        .main{margin:0;width:100%;}
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>🌾 KisaanSaathi</h2>
+    <div class="menu">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="weather.html" class="active">Weather</a>
+        <a href="crop-health.html">Crop Health</a>
+        <a href="mandi.html">Mandi Prices</a>
+        <a href="profile.html">Profile</a>
+        <a href="index.html">Logout</a>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+    <div class="topbar">
+        <h3>🌦 Weather Details</h3>
+        <button onclick="toggleTheme()">🌙 / ☀</button>
+    </div>
+
+    <!-- Search Box -->
+    <div class="weather-box">
+        <h3>Check Weather for Your Location</h3>
+        <input type="text" id="city" placeholder="Enter city (example: Delhi)">
+        <button class="btn-search" onclick="loadWeather()">Search</button>
+
+        <p style="margin-top:10px;">Last Updated: <span id="lastUpdated">--</span></p>
+        <hr style="margin:15px 0;">
+
+        <p>Temperature: <span id="Temp">--</span></p>
+        <p>Humidity: <span id="Humidity">--</span></p>
+        <p>Wind: <span id="Wind">--</span></p>
+        <p style="margin-top:10px;font-weight:bold;" id="Risk"></p>
+    </div>
+
+    <!-- Forecast -->
+    <h2>📅 7-Day Forecast</h2>
+    <div class="forecast" id="forecastBox"></div>
+
+</div>
+
+<script>
+/* ---------- Dark / Light Mode ---------- */
+function toggleTheme(){
+    document.body.classList.toggle("dark");
+    localStorage.setItem("mode", document.body.classList.contains("dark") ? "dark":"light");
+}
+if(localStorage.getItem("mode") === "dark"){ document.body.classList.add("dark"); }
+
+/* ---------- Live Weather + 7-Day Forecast (FREE API) ---------- */
+async function loadWeather(){
+    const apiKey = "7316b53d565a985a92ec34501feb04a9"; // 🔥 Replace with your OpenWeather API Key
+    const city = document.getElementById("city").value || "Delhi";
+
+    try {
+        // Step 1 — Get city coordinates (lat/lon)
+        const geoURL = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
+        const geoRes = await fetch(geoURL);
+        const geoData = await geoRes.json();
+        if (!geoData.length) throw "Invalid City";
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+
+        // Step 2 — FREE OneCall API (2.5)
+        const apiURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+        const res = await fetch(apiURL);
+        const data = await res.json();
+
+        // Current weather
+        document.getElementById("Temp").innerText = data.current.temp + "°C";
+        document.getElementById("Humidity").innerText = data.current.humidity + "%";
+        document.getElementById("Wind").innerText = data.current.wind_speed + " m/s";
+        document.getElementById("lastUpdated").innerText = new Date().toLocaleTimeString();
+
+        // Farming advisory
+        if (data.current.temp > 35) document.getElementById("Risk").innerText = "⚠ Heatwave — irrigate after sunset";
+        else if (data.current.humidity > 75) document.getElementById("Risk").innerText = "⚠ High humidity — fungal infection risk";
+        else document.getElementById("Risk").innerText = "🌱 Farming conditions are normal";
+
+        // 7-day forecast
+        document.getElementById("forecastBox").innerHTML = "";
+        data.daily.slice(0, 7).forEach(day => {
+            const date = new Date(day.dt * 1000).toDateString();
+            document.getElementById("forecastBox").innerHTML += `
+                <div class="day-card">
+                    <h4>${date}</h4>
+                    <p class="temp">${day.temp.day}°C</p>
+                    <p>${day.weather[0].main}</p>
+                </div>
+            `;
+        });
+
+    } catch {
+        alert("Weather data unavailable — check API key or city name.");
+    }
+}
+
+loadWeather(); // auto-load on page open
+</script>
+
+</body>
+</html>
+
+  

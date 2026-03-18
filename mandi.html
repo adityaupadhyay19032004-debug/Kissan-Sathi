@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mandi Prices | KisaanSaathi</title>
+
+<style>
+    :root {
+        --bg: #ffffff;
+        --text: #1b3c1a;
+        --sidebar-bg: #0f6819;
+        --card-bg: #f2fbf3;
+        --btn-bg: #0f6819;
+        --btn-text: #ffffff;
+        --border: #c7efcd;
+    }
+    body.dark {
+        --bg: #0b1a0d;
+        --text: #d9ffe0;
+        --sidebar-bg: #06230c;
+        --card-bg: #14301a;
+        --btn-bg: #1b8f33;
+        --btn-text: #ffffff;
+        --border: #1b8f33;
+    }
+
+    body { margin: 0; display: flex; font-family: Arial; background: var(--bg); color: var(--text); transition: .3s; }
+    .sidebar { width: 230px; background: var(--sidebar-bg); height: 100vh; padding: 20px; position: fixed; }
+    .sidebar h2 { text-align: center; color: var(--btn-text); margin-bottom: 35px; }
+    .menu a { color: var(--btn-text); display: block; padding: 14px; text-decoration: none; margin-bottom: 8px; border-radius: 8px; }
+    .menu a:hover, .menu a.active { background: var(--btn-text); color: var(--sidebar-bg); }
+
+    .main { margin-left: 240px; padding: 20px; width: calc(100% - 240px); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; }
+    .topbar button { background: var(--btn-bg); color: var(--btn-text); padding: 7px 14px; border: none; border-radius: 7px; cursor: pointer; }
+
+    .box { background: var(--card-bg); padding: 24px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 25px; }
+    select, input { font-size: 18px; padding: 10px; width: 100%; margin-top: 12px; border-radius: 8px; border: 2px solid var(--btn-bg); background: var(--bg); color: var(--text); }
+
+    .btn { margin-top: 18px; background: var(--btn-bg); color: var(--btn-text); padding: 12px 20px; border-radius: 10px; font-size: 18px; border: none; cursor: pointer; }
+    .btn:hover { opacity: 0.9; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 18px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--sidebar-bg); color: var(--btn-text); }
+
+    @media(max-width:650px){
+        .sidebar{position:relative;width:100%;height:auto;}
+        .main{margin:0;width:100%;}
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>🌾 KisaanSaathi</h2>
+    <div class="menu">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="weather.html">Weather</a>
+        <a href="crop-health.html">Crop Health</a>
+        <a href="mandi.html" class="active">Mandi Prices</a>
+        <a href="profile.html">Profile</a>
+        <a href="index.html">Logout</a>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+    <div class="topbar">
+        <h3>💰 Mandi Prices</h3>
+        <button onclick="toggleTheme()">🌙 / ☀</button>
+    </div>
+
+    <div class="box">
+        <h2>Check Crop Prices</h2>
+
+        <select id="stateSelect">
+            <option value="">Select State</option>
+            <option>Uttar Pradesh</option>
+            <option>Madhya Pradesh</option>
+            <option>Punjab</option>
+            <option>Rajasthan</option>
+            <option>Bihar</option>
+        </select>
+
+        <select id="marketSelect">
+            <option value="">Select Market</option>
+            <option>Agra</option>
+            <option>Kanpur</option>
+            <option>Lucknow</option>
+            <option>Meerut</option>
+            <option>Varanasi</option>
+        </select>
+
+        <input type="text" id="cropSearch" placeholder="Search crop (e.g. Wheat / Rice)">
+
+        <button class="btn" onclick="loadPrices()">View Prices</button>
+
+        <table id="priceTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Crop</th>
+                    <th>Min Price (₹/Quintal)</th>
+                    <th>Max Price (₹/Quintal)</th>
+                </tr>
+            </thead>
+            <tbody id="priceBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+/* ---------- Dark / Light Mode ---------- */
+function toggleTheme(){
+    document.body.classList.toggle("dark");
+    localStorage.setItem("mode", document.body.classList.contains("dark") ? "dark":"light");
+}
+if(localStorage.getItem("mode")==="dark"){ document.body.classList.add("dark"); }
+
+/* ---------- Sample Prices for Offline Mode (can connect to API later) ---------- */
+const priceData = {
+    "Wheat": {min: 2050, max: 2250},
+    "Rice": {min: 3200, max: 3600},
+    "Maize": {min: 1800, max: 2000},
+    "Sugarcane": {min: 290, max: 340},
+    "Potato": {min: 1400, max: 1800},
+    "Onion": {min: 900, max: 1300}
+};
+
+function loadPrices(){
+    const table = document.getElementById("priceTable");
+    const body = document.getElementById("priceBody");
+    const cropSearch = document.getElementById("cropSearch").value.trim().toLowerCase();
+
+    body.innerHTML = "";
+
+    let found = false;
+    for (let crop in priceData) {
+        if (crop.toLowerCase().includes(cropSearch) || cropSearch === "") {
+            found = true;
+            body.innerHTML += `
+                <tr>
+                    <td>${crop}</td>
+                    <td>₹${priceData[crop].min}</td>
+                    <td>₹${priceData[crop].max}</td>
+                </tr>`;
+        }
+    }
+
+    if (!found){
+        body.innerHTML = `<tr><td colspan="3" style="text-align:center;">No crop found</td></tr>`;
+    }
+
+    table.style.display = "table";
+}
+</script>
+
+</body>
+</html>
